@@ -8,11 +8,25 @@ public class Player {
     private String name = "Player " + playerCount ;
     private PlayerRole role;
     private Voiсe voiсe = Voiсe.NO;
+    private static int numberOfTheChancellor;
+    private static int numberOfThePresident;
 
 
     public Player( PlayerRole role ) {
         playerCount++;
         this.role = role;
+    }
+
+    public Player () {
+
+    }
+
+    public Voiсe getVoiсe() {
+        return voiсe;
+    }
+
+    public void setVoiсe(Voiсe voiсe) {
+        this.voiсe = voiсe;
     }
 
     public void setName(String name) {
