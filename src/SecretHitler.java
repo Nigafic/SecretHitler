@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 import java.util.Scanner;
 
 public class SecretHitler {
@@ -9,13 +10,20 @@ public class SecretHitler {
 
     private static void init() {
 
-        int  numberOfPlayer;
+        boolean finGame = false;
+
+        int numberOfPlayer;
+        int numberOfTheChancellor;
+        int numberOfThePresident;
+
         Scanner scanner = new Scanner(System.in);
+
         System.out.println("Введите колличество игроков " );
         numberOfPlayer = scanner.nextInt();
 
         ArrayList<Player> playerList = new ArrayList<>(numberOfPlayer);
         ArrayList <PlayerRole> playerRoleList = new ArrayList<>(numberOfPlayer);
+
 
         switch (numberOfPlayer){
             case 5:
@@ -94,37 +102,39 @@ public class SecretHitler {
                 System.out.println("Неверное колличество игроков");
         }
 
+        Player president = playerList.get((int) (Math.random()*numberOfPlayer));
+        System.out.println(president);
+        scanner.nextInt();
+
+        System.out.println("Президент, выберите Канслера (номер игрока от 1 до "+numberOfPlayer+")");
+        numberOfTheChancellor = scanner.nextInt();
+        Player chancellor = playerList.get(numberOfTheChancellor-1);
+        System.out.println(chancellor);
+        scanner.nextInt();
+
         System.out.println(playerRoleList.toString());
         System.out.println(playerList.toString());
-
-        Player player1 = new Player(PlayerRole.FASCIST);
-        Player player2 = new Player(PlayerRole.LIBERAL);
-        Player player3 = new Player(PlayerRole.FASCISTHitler);
-
-
 
         //todo singleton
         Board board = Board.getInstance();
 
-        System.out.println(player1.toString());
-        System.out.println(player2.toString());
-        System.out.println(player3.toString());
-
         ArrayList<Law> laws = SecretHitler.LawListFormer(board);
 
-        SecretHitler.lawAdoption(player1, player2, laws, board);
-        SecretHitler.lawAdoption(player2, player3, laws, board);
-        SecretHitler.lawAdoption(player1, player3, laws, board);
-        SecretHitler.lawAdoption(player3, player1, laws, board);
-        SecretHitler.lawAdoption(player1, player2, laws, board);
-        SecretHitler.lawAdoption(player2, player3, laws, board);
-        SecretHitler.lawAdoption(player1, player3, laws, board);
-        SecretHitler.lawAdoption(player3, player1, laws, board);
-        SecretHitler.lawAdoption(player1, player2, laws, board);
-        SecretHitler.lawAdoption(player2, player3, laws, board);
-        SecretHitler.lawAdoption(player1, player3, laws, board);
-        SecretHitler.lawAdoption(player3, player1, laws, board);
 
+
+        while (!finGame){
+            SecretHitler.lawAdoption(president, chancellor, laws, board);
+            if((board.getFascistZone().size()>3 &&chancellor.getRole() == PlayerRole.FASCISTHitler)||board.getFascistZone().size()==6)
+            {
+                finGame = true;
+                System.out.println("Фашисты победили!");
+            }
+            if(board.getLiberalZone().size()==5)
+            {
+                finGame = true;
+                System.out.println("Либерасты победили!");
+            }
+        }
 
     }
 
