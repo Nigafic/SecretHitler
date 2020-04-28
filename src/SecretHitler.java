@@ -13,8 +13,6 @@ public class SecretHitler {
         boolean finGame = false;
 
         int numberOfPlayer;             //колличество игроков
-        int numberOfThePresident;       //номер Игрока Президента
-        int numberOfTheChancellor;      //номер Игрока Канцлера
 
         Scanner scanner = new Scanner(System.in);
 
@@ -109,8 +107,7 @@ public class SecretHitler {
                 System.out.println("Неверное колличество игроков");
         }
 
-        numberOfThePresident = (int)(Math.random()*numberOfPlayer);
-        numberOfTheChancellor = 1;
+        int [] numberOfThePresidentAndChancellor = {(int)(Math.random()*numberOfPlayer),1};       //номер Игрока Президента и Канцлера
 
 
         //todo singleton
@@ -119,36 +116,41 @@ public class SecretHitler {
 
         while (!finGame){
 
-            numberOfThePresident = SecretHitler.presidentElection(playerList, numberOfPlayer, numberOfThePresident, numberOfTheChancellor);
+            //todo fix it
+            numberOfThePresidentAndChancellor = SecretHitler.presidentElection(playerList, numberOfPlayer, numberOfThePresidentAndChancellor);
 
-            if (numberOfThePresident == numberOfPlayer-1){
-                numberOfThePresident = 0;
+            if (numberOfThePresidentAndChancellor[0] == numberOfPlayer-1){
+                numberOfThePresidentAndChancellor[0] = 0;
             }else {
-                numberOfThePresident++;
+                numberOfThePresidentAndChancellor[0]++;
             }
-            if((board.getFascistZone().size()>=2 &&playerList.get(numberOfThePresident).getRole() == PlayerRole.FASCISTHitler)||board.getFascistZone().size()==6)
+            System.out.println(numberOfThePresidentAndChancellor[1]);
+            if((board.getFascistZone().size()>=2 && playerList.get(numberOfThePresidentAndChancellor[1]-1).getRole() == PlayerRole.FASCISTHitler)||board.getFascistZone().size()==6)
             {
                 finGame = true;
                 System.out.println("Фашисты победили!");
+                break;
             }
             if(board.getLiberalZone().size()==5)
             {
                 finGame = true;
                 System.out.println("Либерасты победили!");
+                break;
             }
-            SecretHitler.lawAdoption(president, chancellor, laws, board);
+
+            SecretHitler.lawAdoption(playerList.get(numberOfThePresidentAndChancellor[0]), playerList.get(numberOfThePresidentAndChancellor[1]), laws, board);
         }
 
     }
 
-    public static void lawAdoption (Player player1, Player player2, ArrayList<Law> laws, Board board) {
+    public static void lawAdoption (Player president, Player chancellor, ArrayList<Law> laws, Board board) {
         if (laws.size() < 3) {
             laws = SecretHitler.LawListFormer(board);
         }
-        player1.getLawsPresident(laws);
-        player1.presidentChoice(player2);
-        System.out.println(player2.getHandChancellor().toString());
-        player2.chancellorChoice(board);
+        president.getLawsPresident(laws);
+        president.presidentChoice(chancellor);
+        System.out.println(chancellor.getHandChancellor().toString());
+        chancellor.chancellorChoice(board);
 
 
         //todo all print function
@@ -172,19 +174,19 @@ public class SecretHitler {
         return laws;
     }
 
-     public static int presidentElection (ArrayList <Player> players,int numberOfPlayer, int numberOfThePresident, int numberOfTheChancellor ) {
+     public static int[] presidentElection (ArrayList <Player> players,int numberOfPlayer, int []numberOfThePresidentAndChancellor ) {
         Scanner scanner = new Scanner(System.in);
         int playerChoice;
         int ja = 0;
         int nein= 0;
-         Player president = players.get(numberOfThePresident);
-         System.out.println(numberOfThePresident);
+         Player president = players.get(numberOfThePresidentAndChancellor[0]);
+         System.out.println(numberOfThePresidentAndChancellor[0]);
          System.out.println(president);
 
 
          System.out.println("Президент, выберите Канслера (номер игрока от 1 до "+numberOfPlayer+")");
-         numberOfTheChancellor = scanner.nextInt();
-         Player chancellor = players.get(numberOfTheChancellor-1);
+         numberOfThePresidentAndChancellor[1] = scanner.nextInt();
+         Player chancellor = players.get(numberOfThePresidentAndChancellor[1]-1);
          System.out.println(chancellor);
 
 
@@ -204,16 +206,16 @@ public class SecretHitler {
 
          }else {
              System.out.println("Президент будет переизбран");
-             if (numberOfThePresident == numberOfPlayer-1){
-                 numberOfThePresident = 0;
+             if (numberOfThePresidentAndChancellor[0] == numberOfPlayer-1){
+                 numberOfThePresidentAndChancellor[0] = 0;
              }else {
-                 numberOfThePresident++;
+                 numberOfThePresidentAndChancellor[0]++;
              }
-             president = players.get(numberOfThePresident);
-             numberOfThePresident = SecretHitler.presidentElection(players,numberOfPlayer,numberOfThePresident,numberOfTheChancellor);
+             president = players.get(numberOfThePresidentAndChancellor[0]);
+             numberOfThePresidentAndChancellor = SecretHitler.presidentElection(players,numberOfPlayer,numberOfThePresidentAndChancellor);
          }
 
-         return numberOfThePresident;
+         return numberOfThePresidentAndChancellor;
      }
 
     }
