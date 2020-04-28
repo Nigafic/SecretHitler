@@ -117,6 +117,7 @@ public class SecretHitler {
         while (!finGame){
 
             //todo fix it
+
             numberOfThePresidentAndChancellor = SecretHitler.presidentElection(playerList, numberOfPlayer, numberOfThePresidentAndChancellor);
 
             if (numberOfThePresidentAndChancellor[0] == numberOfPlayer-1){
