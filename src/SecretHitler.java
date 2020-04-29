@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 import java.util.Scanner;
 
 public class SecretHitler {
@@ -12,115 +11,28 @@ public class SecretHitler {
 
         boolean finGame = false;
 
-        int numberOfPlayer;             //колличество игроков
+        int numberOfPlayers;             //колличество игроков
 
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Введите колличество игроков " );
-        numberOfPlayer = scanner.nextInt();                     //считываем запрос
+        numberOfPlayers = scanner.nextInt();                     //считываем запрос
 
-        ArrayList<Player> playerList = new ArrayList<>(numberOfPlayer);                 //список Игроков
-        ArrayList <PlayerRole> playerRoleList = new ArrayList<>(numberOfPlayer);        //Список Ролей (позже распределиться по Игрокам)
-        Player president = new Player();                                                //Президент
-        Player chancellor = new Player();                                               //Канцлер
+        ArrayList<Player> playerList = SecretHitler.roleGeneratorShuffle(numberOfPlayers); //генерируются игроки и раздаются рандомные роли
 
+        int [] numberOfThePresidentAndChancellor = {(int)(Math.random()*numberOfPlayers),1};       //номер Игрока Президента и Канцлера
 
 
-        //в зависимости от колличества игроков распределяется различное колличество ролей
-        //5-6 Гитлер и фашист
-        //7-8 Гитлер и 2 фашиста
-        //9-10 Гитлер и 3 фашиста
-        switch (numberOfPlayer){
-            case 5:
-                playerRoleList.add(PlayerRole.FASCISTHitler);
-                playerRoleList.add(PlayerRole.FASCIST);
-                for (int i = 0; i<3;i++)
-                playerRoleList.add(PlayerRole.LIBERAL);
-                Collections.shuffle(playerRoleList);
-                for (int i = 0; i<numberOfPlayer; i++) {
-                    Player player = new Player(playerRoleList.get(i));
-                    playerList.add(player);
-                }
-                break;
-            case 6:
-                playerRoleList.add(PlayerRole.FASCISTHitler);
-                playerRoleList.add(PlayerRole.FASCIST);
-                for (int i = 0; i<4;i++)
-                    playerRoleList.add(PlayerRole.LIBERAL);
-                Collections.shuffle(playerRoleList);
-                for (int i = 0; i<numberOfPlayer; i++) {
-                    Player player = new Player(playerRoleList.get(i));
-                    playerList.add(player);
-                }
-                break;
-            case 7:
-                playerRoleList.add(PlayerRole.FASCISTHitler);
-                playerRoleList.add(PlayerRole.FASCIST);
-                playerRoleList.add(PlayerRole.FASCIST);
-                for (int i = 0; i<4;i++)
-                    playerRoleList.add(PlayerRole.LIBERAL);
-                Collections.shuffle(playerRoleList);
-                for (int i = 0; i<numberOfPlayer; i++) {
-                    Player player = new Player(playerRoleList.get(i));
-                    playerList.add(player);
-                }
-                break;
-            case 8:
-                playerRoleList.add(PlayerRole.FASCISTHitler);
-                playerRoleList.add(PlayerRole.FASCIST);
-                playerRoleList.add(PlayerRole.FASCIST);
-                for (int i = 0; i<5;i++)
-                    playerRoleList.add(PlayerRole.LIBERAL);
-                Collections.shuffle(playerRoleList);
-                for (int i = 0; i<numberOfPlayer; i++) {
-                    Player player = new Player(playerRoleList.get(i));
-                    playerList.add(player);
-                }
-                break;
-            case 9:
-                playerRoleList.add(PlayerRole.FASCISTHitler);
-                playerRoleList.add(PlayerRole.FASCIST);
-                playerRoleList.add(PlayerRole.FASCIST);
-                playerRoleList.add(PlayerRole.FASCIST);
-                for (int i = 0; i<5;i++)
-                    playerRoleList.add(PlayerRole.LIBERAL);
-                Collections.shuffle(playerRoleList);
-                for (int i = 0; i<numberOfPlayer; i++) {
-                    Player player = new Player(playerRoleList.get(i));
-                    playerList.add(player);
-                }
-                break;
-            case 10:
-                playerRoleList.add(PlayerRole.FASCISTHitler);
-                playerRoleList.add(PlayerRole.FASCIST);
-                playerRoleList.add(PlayerRole.FASCIST);
-                playerRoleList.add(PlayerRole.FASCIST);
-                for (int i = 0; i<6;i++)
-                    playerRoleList.add(PlayerRole.LIBERAL);
-                Collections.shuffle(playerRoleList);
-                for (int i = 0; i<numberOfPlayer; i++) {
-                    Player player = new Player(playerRoleList.get(i));
-                    playerList.add(player);
-                }
-                break;
-            default:
-                System.out.println("Неверное колличество игроков");
-        }
-
-        int [] numberOfThePresidentAndChancellor = {(int)(Math.random()*numberOfPlayer),1};       //номер Игрока Президента и Канцлера
-
-
-        //todo singleton
+        //todo good singleton
         Board board = Board.getInstance();
-        ArrayList<Law> laws = SecretHitler.LawListFormer(board); //первая генерация колоды законов
+        ArrayList<Law> laws = SecretHitler.lawListFormer(board); //первая генерация колоды законов
 
         while (!finGame){
 
-            //todo fix it
 
-            numberOfThePresidentAndChancellor = SecretHitler.presidentElection(playerList, numberOfPlayer, numberOfThePresidentAndChancellor);
+            numberOfThePresidentAndChancellor = SecretHitler.presidentElection(playerList, numberOfPlayers, numberOfThePresidentAndChancellor);
 
-            if (numberOfThePresidentAndChancellor[0] == numberOfPlayer-1){
+            if (numberOfThePresidentAndChancellor[0] == numberOfPlayers-1){
                 numberOfThePresidentAndChancellor[0] = 0;
             }else {
                 numberOfThePresidentAndChancellor[0]++;
@@ -146,7 +58,7 @@ public class SecretHitler {
 
     public static void lawAdoption (Player president, Player chancellor, ArrayList<Law> laws, Board board) {
         if (laws.size() < 3) {
-            laws = SecretHitler.LawListFormer(board);
+            laws = SecretHitler.lawListFormer(board);
         }
         president.getLawsPresident(laws);
         president.presidentChoice(chancellor);
@@ -160,8 +72,98 @@ public class SecretHitler {
     }
 
 
+    //генерирует и мешает роли игроков
+    public static ArrayList<Player> roleGeneratorShuffle (int numberOfPlayers) {
+
+        ArrayList<Player> playerList = new ArrayList<>(numberOfPlayers);                 //список Игроков
+        ArrayList <PlayerRole> playerRoleList = new ArrayList<>(numberOfPlayers);        //Список Ролей (позже распределиться по Игрокам)
+
+
+        //в зависимости от колличества игроков распределяется различное колличество ролей
+        //5-6 Гитлер и фашист
+        //7-8 Гитлер и 2 фашиста
+        //9-10 Гитлер и 3 фашиста
+        switch (numberOfPlayers){
+            case 5:
+                playerRoleList.add(PlayerRole.FASCISTHitler);
+                playerRoleList.add(PlayerRole.FASCIST);
+                for (int i = 0; i<3;i++)
+                    playerRoleList.add(PlayerRole.LIBERAL);
+                Collections.shuffle(playerRoleList);
+                for (int i = 0; i<numberOfPlayers; i++) {
+                    Player player = new Player(playerRoleList.get(i));
+                    playerList.add(player);
+                }
+                break;
+            case 6:
+                playerRoleList.add(PlayerRole.FASCISTHitler);
+                playerRoleList.add(PlayerRole.FASCIST);
+                for (int i = 0; i<4;i++)
+                    playerRoleList.add(PlayerRole.LIBERAL);
+                Collections.shuffle(playerRoleList);
+                for (int i = 0; i<numberOfPlayers; i++) {
+                    Player player = new Player(playerRoleList.get(i));
+                    playerList.add(player);
+                }
+                break;
+            case 7:
+                playerRoleList.add(PlayerRole.FASCISTHitler);
+                playerRoleList.add(PlayerRole.FASCIST);
+                playerRoleList.add(PlayerRole.FASCIST);
+                for (int i = 0; i<4;i++)
+                    playerRoleList.add(PlayerRole.LIBERAL);
+                Collections.shuffle(playerRoleList);
+                for (int i = 0; i<numberOfPlayers; i++) {
+                    Player player = new Player(playerRoleList.get(i));
+                    playerList.add(player);
+                }
+                break;
+            case 8:
+                playerRoleList.add(PlayerRole.FASCISTHitler);
+                playerRoleList.add(PlayerRole.FASCIST);
+                playerRoleList.add(PlayerRole.FASCIST);
+                for (int i = 0; i<5;i++)
+                    playerRoleList.add(PlayerRole.LIBERAL);
+                Collections.shuffle(playerRoleList);
+                for (int i = 0; i<numberOfPlayers; i++) {
+                    Player player = new Player(playerRoleList.get(i));
+                    playerList.add(player);
+                }
+                break;
+            case 9:
+                playerRoleList.add(PlayerRole.FASCISTHitler);
+                playerRoleList.add(PlayerRole.FASCIST);
+                playerRoleList.add(PlayerRole.FASCIST);
+                playerRoleList.add(PlayerRole.FASCIST);
+                for (int i = 0; i<5;i++)
+                    playerRoleList.add(PlayerRole.LIBERAL);
+                Collections.shuffle(playerRoleList);
+                for (int i = 0; i<numberOfPlayers; i++) {
+                    Player player = new Player(playerRoleList.get(i));
+                    playerList.add(player);
+                }
+                break;
+            case 10:
+                playerRoleList.add(PlayerRole.FASCISTHitler);
+                playerRoleList.add(PlayerRole.FASCIST);
+                playerRoleList.add(PlayerRole.FASCIST);
+                playerRoleList.add(PlayerRole.FASCIST);
+                for (int i = 0; i<6;i++)
+                    playerRoleList.add(PlayerRole.LIBERAL);
+                Collections.shuffle(playerRoleList);
+                for (int i = 0; i<numberOfPlayers; i++) {
+                    Player player = new Player(playerRoleList.get(i));
+                    playerList.add(player);
+                }
+                break;
+            default:
+                System.out.println("Неверное колличество игроков");
+        }
+        return playerList;
+    }
+
     //Генерирует колоду законов
-    public static ArrayList<Law> LawListFormer (Board board ){
+    public static ArrayList<Law> lawListFormer(Board board ){
         ArrayList<Law> laws = new ArrayList<>();
         {
             for ( int i = 0;i < 11 - board.getFascistZone().size(); i++){
@@ -186,9 +188,15 @@ public class SecretHitler {
 
 
          System.out.println("Президент, выберите Канслера (номер игрока от 1 до "+numberOfPlayer+")");
-         numberOfThePresidentAndChancellor[1] = scanner.nextInt();
-         Player chancellor = players.get(numberOfThePresidentAndChancellor[1]-1);
-         System.out.println(chancellor);
+         numberOfThePresidentAndChancellor[1] = scanner.nextInt()-1;
+
+         while((numberOfThePresidentAndChancellor[1]) == numberOfThePresidentAndChancellor[0]) {
+             System.out.println("Президент не может быть канцлером !");
+             System.out.println("Президент, выберите Канслера (номер игрока от 1 до "+numberOfPlayer+")");
+             numberOfThePresidentAndChancellor[1] = scanner.nextInt()-1;
+         }
+             Player chancellor = players.get(numberOfThePresidentAndChancellor[1]);
+             System.out.println(chancellor);
 
 
          for (int i = 0; i < numberOfPlayer; i++) {
@@ -203,17 +211,15 @@ public class SecretHitler {
              }
          }
 
-         if (nein<ja){
-
-         }else {
+         if (ja<nein){
              System.out.println("Президент будет переизбран");
              if (numberOfThePresidentAndChancellor[0] == numberOfPlayer-1){
                  numberOfThePresidentAndChancellor[0] = 0;
              }else {
                  numberOfThePresidentAndChancellor[0]++;
              }
-             president = players.get(numberOfThePresidentAndChancellor[0]);
              numberOfThePresidentAndChancellor = SecretHitler.presidentElection(players,numberOfPlayer,numberOfThePresidentAndChancellor);
+
          }
 
          return numberOfThePresidentAndChancellor;
