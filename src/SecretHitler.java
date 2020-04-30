@@ -11,16 +11,18 @@ public class SecretHitler {
 
         boolean finGame = false;
 
-        int numberOfPlayers;             //колличество игроков
+        int numberOfPlayers;                //колличество игроков
 
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Введите колличество игроков " );
         numberOfPlayers = scanner.nextInt();                     //считываем запрос
 
+        int numberOfLawForHitlerChancellorWin = SecretHitler.getNumberOfLawForHitlerChancellorWin(numberOfPlayers);
+
         ArrayList<Player> playerList = SecretHitler.roleGeneratorShuffle(numberOfPlayers); //генерируются игроки и раздаются рандомные роли
 
-        int [] numberOfThePresidentAndChancellor = {(int)(Math.random()*numberOfPlayers),1};       //номер Игрока Президента и Канцлера
+        int [] numberOfThePresidentAndChancellor = {(int)(Math.random()*numberOfPlayers),5};       //номер Игрока Президента и Канцлера
 
 
         //todo good singleton
@@ -29,16 +31,7 @@ public class SecretHitler {
 
         while (!finGame){
 
-
-            numberOfThePresidentAndChancellor = SecretHitler.presidentElection(playerList, numberOfPlayers, numberOfThePresidentAndChancellor);
-
-            if (numberOfThePresidentAndChancellor[0] == numberOfPlayers-1){
-                numberOfThePresidentAndChancellor[0] = 0;
-            }else {
-                numberOfThePresidentAndChancellor[0]++;
-            }
-            System.out.println(numberOfThePresidentAndChancellor[1]);
-            if((board.getFascistZone().size()>=2 && playerList.get(numberOfThePresidentAndChancellor[1]-1).getRole() == PlayerRole.FASCISTHitler)||board.getFascistZone().size()==6)
+            if(board.getFascistZone().size()==(numberOfLawForHitlerChancellorWin+3))
             {
                 finGame = true;
                 System.out.println("Фашисты победили!");
@@ -51,12 +44,29 @@ public class SecretHitler {
                 break;
             }
 
-            SecretHitler.lawAdoption(playerList.get(numberOfThePresidentAndChancellor[0]), playerList.get(numberOfThePresidentAndChancellor[1]), laws, board);
+            numberOfThePresidentAndChancellor = SecretHitler.presidentElection(playerList, numberOfPlayers, numberOfThePresidentAndChancellor);
+
+            if (numberOfThePresidentAndChancellor[0] == numberOfPlayers-1){
+                numberOfThePresidentAndChancellor[0] = 0;
+            }else {
+                numberOfThePresidentAndChancellor[0]++;
+            }
+            System.out.println(numberOfThePresidentAndChancellor[1]);
+
+            if((board.getFascistZone().size()>=numberOfLawForHitlerChancellorWin && playerList.get(numberOfThePresidentAndChancellor[1]).getRole() == PlayerRole.FASCISTHitler))
+            {
+                finGame = true;
+                System.out.println("Фашисты победили!");
+                break;
+            }
+
+
+            SecretHitler.lawAdoption(playerList.get(numberOfThePresidentAndChancellor[0]), playerList.get(numberOfThePresidentAndChancellor[1]),playerList, laws, board, numberOfLawForHitlerChancellorWin);
         }
 
     }
 
-    public static void lawAdoption (Player president, Player chancellor, ArrayList<Law> laws, Board board) {
+    public static void lawAdoption (Player president, Player chancellor,ArrayList<Player> players, ArrayList<Law> laws, Board board, int numberOfLawForHitlerChancellorWin) {
         if (laws.size() < 3) {
             laws = SecretHitler.lawListFormer(board);
         }
@@ -64,6 +74,7 @@ public class SecretHitler {
         president.presidentChoice(chancellor);
         System.out.println(chancellor.getHandChancellor().toString());
         chancellor.chancellorChoice(board);
+        board.getActionFascistLaw(numberOfLawForHitlerChancellorWin, president, players, laws);
 
 
         //todo all print function
@@ -160,6 +171,26 @@ public class SecretHitler {
                 System.out.println("Неверное колличество игроков");
         }
         return playerList;
+    }
+
+    public static int getNumberOfLawForHitlerChancellorWin (int numberOfPlayers) {
+
+        switch (numberOfPlayers){
+            case 5:
+            case 6:
+                numberOfPlayers = 1;
+                break;
+            case 7:
+            case 8:
+                numberOfPlayers = 2;
+                break;
+            case 9:
+            case 10:
+                numberOfPlayers = 3;
+                break;
+        }
+
+        return numberOfPlayers;
     }
 
     //Генерирует колоду законов

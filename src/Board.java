@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Board {
 
@@ -21,6 +22,52 @@ public class Board {
 
     public ArrayList<Law> getLiberalZone() {
         return liberalZone;
+    }
+
+    public void getActionFascistLaw (int numberOfLawForHitlerChancellorWin, Player president, ArrayList<Player> players, ArrayList <Law> laws) {
+        Scanner scanner = new Scanner(System.in);
+
+        if (numberOfLawForHitlerChancellorWin == 1 ){
+            switch (this.getFascistZone().size()){
+                case 1:
+                    System.out.println("Это должен видеть только Президент");
+                    scanner.nextInt();
+
+                    president.presidentCheckLaw(laws);
+                    break;
+                case 2:
+                    //todo kill player
+                    break;
+            }
+        }
+        if (numberOfLawForHitlerChancellorWin == 2){
+            switch (this.getFascistZone().size()){
+                case 1:
+                    System.out.println("Это должен видеть только Президент");
+                    scanner.nextInt();
+
+                    president.presidentCheckPartyMember(players);
+                    break;
+                case 2:
+                    //todo choice president
+
+                    break;
+            }
+        }
+        if (numberOfLawForHitlerChancellorWin == 3){
+            switch (this.getFascistZone().size()){
+                case 1:
+                case 2:
+                    System.out.println("Это должен видеть только Президент");
+                    scanner.nextInt();
+
+                    president.presidentCheckPartyMember(players);
+                    break;
+                case 3:
+                    //todo choice president
+                    break;
+            }
+        }
     }
 
 }

@@ -92,7 +92,7 @@ public class Player {
         this.handChancellor.remove(choice-1);
 
         if (this.handChancellor.get(0) == Law.FASCIST){
-        board.getFascistZone().add(this.handChancellor.get(0));
+            board.getFascistZone().add(this.handChancellor.get(0));
         }
         else{
             board.getLiberalZone().add(this.handChancellor.get(0));
@@ -100,6 +100,30 @@ public class Player {
 
         this.handChancellor.clear();
         this.handPresident.clear();
+    }
+
+    public void presidentCheckLaw (ArrayList <Law> laws) {
+        for(int i = 0; i<3; i++){
+            //System.out.println("Колода "+laws);
+            this.handPresident.add(laws.get(0));
+        }
+        System.out.println(this.handPresident);
+        this.handPresident.removeAll(this.handPresident);
+    }
+
+    public void presidentCheckPartyMember (ArrayList <Player> players) {
+        System.out.println("Выберите номер игрока, которого хотите проверить. ");
+        Scanner scanner = new Scanner(System.in);
+        int presidentChoice = scanner.nextInt();
+
+        System.out.println(players.get(presidentChoice).getRole().getParty());
+    }
+
+    public void presidentSetNextPresident (ArrayList <Player> players, int numberOfThePresident) {
+        System.out.println("Выберите номер игрока, которого хотите сделать президентом. ");
+        Scanner scanner = new Scanner(System.in);
+        int presidentChoice = scanner.nextInt();
+
     }
 
 
