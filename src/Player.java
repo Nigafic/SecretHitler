@@ -116,13 +116,27 @@ public class Player {
         Scanner scanner = new Scanner(System.in);
         int presidentChoice = scanner.nextInt();
 
-        System.out.println(players.get(presidentChoice).getRole().getParty());
+        System.out.println(players.get(presidentChoice-1).getRole().getParty());
     }
 
-    public void presidentSetNextPresident (ArrayList <Player> players, int numberOfThePresident) {
+    public void presidentSetNextPresident (ArrayList <Player> players,ArrayList<Law> laws,int numberOfWinHitler) {
         System.out.println("Выберите номер игрока, которого хотите сделать президентом. ");
         Scanner scanner = new Scanner(System.in);
-        int presidentChoice = scanner.nextInt();
+        int presidentChoice = scanner.nextInt() - 1;
+
+        Player president = players.get(presidentChoice);
+        System.out.println("Президент, выберите Канслера (номер игрока от 1 до "+players.size()+")");
+        int chancellor = scanner.nextInt()-1;
+
+        while((chancellor) == presidentChoice) {
+            System.out.println("Президент не может быть канцлером !");
+            System.out.println("Президент, выберите Канслера (номер игрока от 1 до "+players.size()+")");
+            chancellor = scanner.nextInt()-1;
+
+            Player  Chancellor = players.get(chancellor);
+            System.out.println(Chancellor);
+        }
+        SecretHitler.lawAdoption(president,players.get(chancellor),players,laws,Board.getInstance(),numberOfWinHitler);
 
     }
 

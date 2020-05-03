@@ -50,7 +50,7 @@ public class Board {
                     break;
                 case 2:
                     //todo choice president
-
+                    president.presidentSetNextPresident(players,laws,numberOfLawForHitlerChancellorWin);
                     break;
             }
         }
@@ -64,7 +64,7 @@ public class Board {
                     president.presidentCheckPartyMember(players);
                     break;
                 case 3:
-                    //todo choice president
+                    president.presidentSetNextPresident(players,laws,numberOfLawForHitlerChancellorWin);
                     break;
             }
         }
